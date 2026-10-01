@@ -1,7 +1,18 @@
 import anthropic
 
+from pathlib import Path
+
+def read_logs(skill: str) -> str:
+    path = Path.home() / "Projects" / "life-ops" / "skills" / skill / "log.md"
+    if not path.exists():
+        return f"No log found for this skill: {skill}"
+    else:
+        return path.read_text()
+
 def main() -> None:
     client = anthropic.Anthropic()
+    print(read_logs("dance"))
+    print(read_logs("chess"))
 
     read_logs_tool = {
         "name": "read_logs",
