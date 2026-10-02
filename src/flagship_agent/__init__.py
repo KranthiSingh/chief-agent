@@ -26,45 +26,39 @@ def main() -> None:
 
     system_prompt = "You are a personal AI assistant acting as my skills coach. Be informative but concise, and motivating but realistic."
 
-    messages=[{"role": "user", "content": "How is my yoga going this week?"}]
+    messages=[{"role": "user", "content": "Hello"}]
     
-    response = client.messages.create(
-        model="claude-opus-5",
-        max_tokens=1024,
-        system=system_prompt,
-        messages=messages,
-        tools=[read_logs_tool]
-    ) 
+    turns = 0
+    while turns < 5:
+        turns += 1
 
-    tool_results = []
-    for block in response.content:
-        if block.type == "text":
-            print(block.text)
-        elif block.type == "tool_use":
-            print(block.name, block.input)
-            skill = block.input["skill"]
-            result = read_logs(skill)
-            tool_results.append({
+        response = client.messages.create(
+            model="claude-opus-5",
+            max_tokens=1024,
+            system=system_prompt,
+            messages=messages,
+            tools=[read_logs_tool]
+        ) 
+
+        tool_results = []
+        for block in response.content:
+            if block.type == "text":
+                print(block.text)
+            elif block.type == "tool_use":
+                print(block.name, block.input)
+                skill = block.input["skill"]
+                result = read_logs(skill)
+                tool_results.append({
                 "type": "tool_result",
                 "tool_use_id": block.id,
                 "content": result
-            })
+                })
 
-    messages.append({"role": "assistant", "content": response.content})
-    messages.append({"role": "user", "content": tool_results})
+        if response.stop_reason != "tool_use":
+            break
 
-    response = client.messages.create(
-        model="claude-opus-5",
-        max_tokens=1024,
-        system=system_prompt,
-        messages=messages,
-        tools=[read_logs_tool]
-    )
-
-    for block in response.content:
-        if block.type == "text":
-            print(block.text)
-    
+        messages.append({"role": "assistant", "content": response.content})
+        messages.append({"role": "user", "content": tool_results})
 
     print(response.stop_reason)
     print(response.usage.input_tokens)
