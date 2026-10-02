@@ -11,8 +11,6 @@ def read_logs(skill: str) -> str:
 
 def main() -> None:
     client = anthropic.Anthropic()
-    print(read_logs("dance"))
-    print(read_logs("chess"))
 
     read_logs_tool = {
         "name": "read_logs",
@@ -26,19 +24,47 @@ def main() -> None:
         }
     }
 
+    system_prompt = "You are a personal AI assistant acting as my skills coach. Be informative but concise, and motivating but realistic."
+
+    messages=[{"role": "user", "content": "How is my yoga going this week?"}]
+    
     response = client.messages.create(
         model="claude-opus-5",
         max_tokens=1024,
-        system="You are a personal AI assistant acting as a skills coach. Be informative but concise and motivating but realistic.",
-        messages=[{"role": "user", "content": "How is my yoga going this week?"}],
+        system=system_prompt,
+        messages=messages,
         tools=[read_logs_tool]
     ) 
 
+    tool_results = []
     for block in response.content:
         if block.type == "text":
             print(block.text)
         elif block.type == "tool_use":
             print(block.name, block.input)
+            skill = block.input["skill"]
+            result = read_logs(skill)
+            tool_results.append({
+                "type": "tool_result",
+                "tool_use_id": block.id,
+                "content": result
+            })
+
+    messages.append({"role": "assistant", "content": response.content})
+    messages.append({"role": "user", "content": tool_results})
+
+    response = client.messages.create(
+        model="claude-opus-5",
+        max_tokens=1024,
+        system=system_prompt,
+        messages=messages,
+        tools=[read_logs_tool]
+    )
+
+    for block in response.content:
+        if block.type == "text":
+            print(block.text)
+    
 
     print(response.stop_reason)
     print(response.usage.input_tokens)
