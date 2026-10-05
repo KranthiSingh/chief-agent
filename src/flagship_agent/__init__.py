@@ -29,10 +29,18 @@ def format_entry(session: Session) -> str:
     return f"- {today} | {session.minutes} min | {session.what} | {notes}"
 
 
+def append_log(session: Session) -> str:
+    path = Path.home() / "Projects" / "life-ops" / "skills" / session.skill / "log.md"
+    if not path.exists():
+        return f"No log found for this skill: {session.skill}"
+    else:
+        with open(path, "a") as f:
+            f.write(format_entry(session) + "\n")
+        return f"Logged: {session.skill}, {session.minutes} min"
+
+
 def main() -> None:
     client = anthropic.Anthropic()
-
-    print(format_entry(Session(skill="yoga", minutes=20, what="flow", notes="")))
 
     read_logs_tool = {
         "name": "read_logs",
