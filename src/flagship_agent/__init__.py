@@ -1,6 +1,13 @@
 import anthropic
 
 from pathlib import Path
+from pydantic import BaseModel
+
+class Session(BaseModel):
+    skill: str
+    minutes: int
+    what: str
+    notes: str
 
 def read_logs(skill: str) -> str:
     path = Path.home() / "Projects" / "life-ops" / "skills" / skill / "log.md"
@@ -11,6 +18,12 @@ def read_logs(skill: str) -> str:
 
 def main() -> None:
     client = anthropic.Anthropic()
+
+    sesh01 = Session(skill="yoga", minutes=20, what="flow", notes="felt stiff")
+    print(sesh01)
+
+    sesh02 = Session(skill="yoga", minutes="twenty", what="flow", notes="felt stiff")
+    print(sesh02)
 
     read_logs_tool = {
         "name": "read_logs",
