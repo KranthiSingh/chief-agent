@@ -54,6 +54,12 @@ def main() -> None:
         }
     }
 
+    log_session_tool = {
+        "name": "log_session",
+        "description": "Append a new session to the log. Use this when the user wants to add a new session to a specific skill, e.g. did 30min of dance practice",
+        "input_schema": Session.model_json_schema(),
+    }
+
     system_prompt = "You are a personal AI assistant acting as my skills coach. Be informative but concise, and motivating but realistic."
 
     messages=[{"role": "user", "content": "Hello"}]
@@ -67,7 +73,7 @@ def main() -> None:
             max_tokens=1024,
             system=system_prompt,
             messages=messages,
-            tools=[read_logs_tool]
+            tools=[read_logs_tool, log_session_tool]
         ) 
 
         tool_results = []
