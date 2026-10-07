@@ -1,15 +1,15 @@
 import anthropic
 
 from pathlib import Path
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import date
 
 
 class Session(BaseModel):
-    skill: str
-    minutes: int
-    what: str
-    notes: str
+    skill: str = Field(description="The skill folder name, e.g. 'yoga' or 'ai-engineering'")
+    minutes: int = Field(description="Minutes spent on this session as a whole number e.g. '20'. Convert hours to minutes example 2h = 120")
+    what: str = Field(description="What was done during the session, e.g. 'stretched', 'surya namaskar'. Keep extra details for notes. Never use the '|' character")
+    notes: str = Field(default="", description="Any notes or extra information. Leave empty if the user gave none. Never use the '|' character.")
 
 
 def read_logs(skill: str) -> str:
