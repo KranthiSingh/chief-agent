@@ -1,0 +1,21 @@
+[
+{
+    "message": "did 20min of yoga",
+    "expected_tool": "log_session",
+    "expected_input": {"skill": "yoga", "minutes": 20}
+},
+
+
+{
+    "message": "Completed 45min of AI engineering",
+    "expected_tool": "log_session",
+    "expected_input": {"skill": "ai-engineering", "minutes": 45}
+},
+
+
+{
+    "message": "1h of interview prep done. I edited my cv and practiced answering some STAR questions. Productive session today.",
+    "expected_tool": "log_session",
+    "expected_input": {"skill": "interview", "minutes": 60}
+}
+]
