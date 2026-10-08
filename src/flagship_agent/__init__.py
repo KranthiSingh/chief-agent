@@ -39,6 +39,19 @@ def append_log(session: Session) -> str:
         return f"Logged: {session.skill}, {session.minutes} min"
 
 
+def parse_line(line: str) -> tuple[str, int]:
+    row = line.split(" | ")
+    day = row[0].removeprefix("- ")
+    duration = row[1].split()
+    if duration[0] == "?":
+        minutes = 0
+    else:
+        minutes = int(duration[0])
+    return day, minutes
+
+    
+
+
 def main() -> None:
     client = anthropic.Anthropic()
 
