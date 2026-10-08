@@ -62,8 +62,8 @@ def main() -> None:
 
     system_prompt = "You are a personal AI assistant acting as my skills coach. Be informative but concise, and motivating but realistic."
 
-    messages=[{"role": "user", "content": "Hello"}]
-    
+    messages=[{"role": "user", "content": "I've done 45min of AI engineering today. I wired up the log session tool with dispatching. Please log it."}]
+
     turns = 0
     while turns < 5:
         turns += 1
@@ -74,7 +74,7 @@ def main() -> None:
             system=system_prompt,
             messages=messages,
             tools=[read_logs_tool, log_session_tool]
-        ) 
+        )
 
         tool_results = []
         for block in response.content:
@@ -82,8 +82,14 @@ def main() -> None:
                 print(block.text)
             elif block.type == "tool_use":
                 print(block.name, block.input)
-                skill = block.input["skill"]
-                result = read_logs(skill)
+                if block.name == "read_logs":
+                    skill = block.input["skill"]
+                    result = read_logs(skill)
+                elif block.name == "log_session":
+                    session = Session.model_validate(block.input)
+                    result = append_log(session)
+                else:
+                    result = f"Unknown tool: {block.name}"
                 tool_results.append({
                 "type": "tool_result",
                 "tool_use_id": block.id,
