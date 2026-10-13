@@ -2,7 +2,7 @@ import anthropic
 
 from pathlib import Path
 from pydantic import BaseModel, Field
-from datetime import date
+from datetime import date, timedelta
 
 
 class Session(BaseModel):
@@ -49,17 +49,23 @@ def parse_line(line: str) -> tuple[str, int]:
         minutes = int(duration[0])
     return day, minutes
 
-def compute_streak(skill: str) -> dict:
+def compute_streak(skill: str, minimum: int) -> int:
     text = read_logs(skill)
     totals = {}
     entries = text.splitlines()
     for line in entries:
         if not line.startswith("- 20"):
             continue
-        else:
-            day, minutes = parse_line(line)
-            totals[day] = totals.get(day, 0) + minutes
-    return totals
+        day, minutes = parse_line(line)
+        totals[day] = totals.get(day, 0) + minutes
+    current_day = date.today()
+    if totals.get(current_day.isoformat(), 0) < minimum:
+        current_day = date.today() - timedelta(days=1)
+    streak = 0
+    while totals.get(current_day.isoformat(), 0) >= minimum:
+        streak = streak + 1
+        current_day = current_day - timedelta(days=1)
+    return streak
 
     
 
