@@ -49,6 +49,18 @@ def parse_line(line: str) -> tuple[str, int]:
         minutes = int(duration[0])
     return day, minutes
 
+def compute_streak(skill: str) -> dict:
+    text = read_logs(skill)
+    totals = {}
+    entries = text.splitlines()
+    for line in entries:
+        if not line.startswith("- 20"):
+            continue
+        else:
+            day, minutes = parse_line(line)
+            totals[day] = totals.get(day, 0) + minutes
+    return totals
+
     
 
 
