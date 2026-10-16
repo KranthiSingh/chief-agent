@@ -91,9 +91,22 @@ def main() -> None:
         "input_schema": Session.model_json_schema(),
     }
 
+    compute_streak_tool = {
+        "name": "compute_streak",
+        "description": "Compute the current streak for one skill, which is the number of days in a row, up to today, with at least 'minimum' minutes logged. If today hasn't reached the minimum yet, counting starts from yesterday. Use this when the user asks about their streak or consistency, e.g. 'Have I been keeping up with ai-engineering?'. If the user gives no minimum, ask them for one.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "skill": {"type": "string", "description": "The skill folder name e.g. programming"},
+                "minimum": {"type": "integer", "description": "Minutes a day needed to count towards the streak"}
+            },
+            "required": ["skill", "minimum"]
+        }
+    }
+
     system_prompt = "You are a personal AI assistant acting as my skills coach. Be informative but concise, and motivating but realistic."
 
-    messages=[{"role": "user", "content": "I've done 45min of AI engineering today. I wired up the log session tool with dispatching. Please log it."}]
+    messages=[{"role": "user", "content": "Have I been keeping up with Yoga?"}]
 
     turns = 0
     while turns < 5:
@@ -104,7 +117,7 @@ def main() -> None:
             max_tokens=1024,
             system=system_prompt,
             messages=messages,
-            tools=[read_logs_tool, log_session_tool]
+            tools=[read_logs_tool, log_session_tool, compute_streak_tool]
         )
 
         tool_results = []
@@ -119,6 +132,10 @@ def main() -> None:
                 elif block.name == "log_session":
                     session = Session.model_validate(block.input)
                     result = append_log(session)
+                elif block.name == "compute_streak":
+                    skill = block.input["skill"]
+                    minimum = block.input["minimum"]
+                    result = str(compute_streak(skill, minimum))
                 else:
                     result = f"Unknown tool: {block.name}"
                 tool_results.append({
