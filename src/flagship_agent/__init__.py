@@ -1,4 +1,5 @@
 import anthropic
+import os
 
 from pathlib import Path
 from pydantic import BaseModel, Field
@@ -12,8 +13,13 @@ class Session(BaseModel):
     notes: str = Field(default="", description="Any notes or extra information. Leave empty if the user gave none. Never use the '|' character.")
 
 
+def log_path(skill: str) -> Path:
+    base = Path(os.environ.get("LIFE_OPS_DIR", Path.home() / "Projects" / "life-ops"))
+    return base / "skills" / skill / "log.md"
+
+
 def read_logs(skill: str) -> str:
-    path = Path.home() / "Projects" / "life-ops" / "skills" / skill / "log.md"
+    path = log_path(skill)
     if not path.exists():
         return f"No log found for this skill: {skill}"
     else:
@@ -30,7 +36,7 @@ def format_entry(session: Session) -> str:
 
 
 def append_log(session: Session) -> str:
-    path = Path.home() / "Projects" / "life-ops" / "skills" / session.skill / "log.md"
+    path = log_path(session.skill)
     if not path.exists():
         return f"No log found for this skill: {session.skill}"
     else:
@@ -106,7 +112,7 @@ def main() -> None:
 
     system_prompt = "You are a personal AI assistant acting as my skills coach. Be informative but concise, and motivating but realistic."
 
-    messages=[{"role": "user", "content": "Have I been keeping up with Yoga?"}]
+    messages=[{"role": "user", "content": "Have I been keeping up with Yoga. What's my current streak counting days with at least 20min?"}]
 
     turns = 0
     while turns < 5:
