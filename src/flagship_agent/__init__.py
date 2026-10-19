@@ -115,6 +115,9 @@ def main() -> None:
     messages=[{"role": "user", "content": "Have I been keeping up with Yoga. What's my current streak counting days with at least 20min?"}]
 
     turns = 0
+    total_input = 0
+    total_output = 0 
+
     while turns < 5:
         turns += 1
 
@@ -126,12 +129,14 @@ def main() -> None:
             tools=[read_logs_tool, log_session_tool, compute_streak_tool]
         )
 
+        total_input += response.usage.input_tokens
+        total_output += response.usage.output_tokens
         tool_results = []
+
         for block in response.content:
             if block.type == "text":
                 print(block.text)
             elif block.type == "tool_use":
-                print(block.name, block.input)
                 if block.name == "read_logs":
                     skill = block.input["skill"]
                     result = read_logs(skill)
@@ -156,6 +161,4 @@ def main() -> None:
         messages.append({"role": "assistant", "content": response.content})
         messages.append({"role": "user", "content": tool_results})
 
-    print(response.stop_reason)
-    print(response.usage.input_tokens)
-    print(response.usage.output_tokens)
+    print(f"Tokens used: {total_input} input, {total_output} output")
