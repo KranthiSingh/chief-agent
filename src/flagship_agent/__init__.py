@@ -14,7 +14,10 @@ class Session(BaseModel):
 
 
 def log_path(skill: str) -> Path:
-    base = Path(os.environ.get("LIFE_OPS_DIR", Path.home() / "Projects" / "life-ops"))
+    life_ops_dir = os.environ.get("LIFE_OPS_DIR")
+    if not life_ops_dir:
+        raise RuntimeError("LIFE_OPS_DIR is not set. Please add it to your .env file, e.g. LIFE_OPS_DIR=/path/to/life-ops") 
+    base = Path(life_ops_dir)
     return base / "skills" / skill / "log.md"
 
 
