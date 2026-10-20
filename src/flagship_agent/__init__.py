@@ -1,9 +1,9 @@
-import anthropic
 import os
-
-from pathlib import Path
-from pydantic import BaseModel, Field
 from datetime import date, timedelta
+from pathlib import Path
+
+import anthropic
+from pydantic import BaseModel, Field
 
 
 class Session(BaseModel):
@@ -16,7 +16,7 @@ class Session(BaseModel):
 def log_path(skill: str) -> Path:
     life_ops_dir = os.environ.get("LIFE_OPS_DIR")
     if not life_ops_dir:
-        raise RuntimeError("LIFE_OPS_DIR is not set. Please add it to your .env file, e.g. LIFE_OPS_DIR=/path/to/life-ops") 
+        raise RuntimeError("LIFE_OPS_DIR is not set. Please add it to your .env file, e.g. LIFE_OPS_DIR=/path/to/life-ops")
     base = Path(life_ops_dir)
     return base / "skills" / skill / "log.md"
 
@@ -72,11 +72,9 @@ def compute_streak(skill: str, minimum: int) -> int:
         current_day = date.today() - timedelta(days=1)
     streak = 0
     while totals.get(current_day.isoformat(), 0) >= minimum:
-        streak = streak + 1
+        streak += 1
         current_day = current_day - timedelta(days=1)
     return streak
-
-    
 
 
 def main() -> None:
@@ -119,7 +117,7 @@ def main() -> None:
 
     turns = 0
     total_input = 0
-    total_output = 0 
+    total_output = 0
 
     while turns < 5:
         turns += 1
