@@ -1,6 +1,7 @@
 import os
 from datetime import date, timedelta
 from pathlib import Path
+import re
 
 import anthropic
 from pydantic import BaseModel, Field
@@ -21,6 +22,9 @@ def get_life_ops_dir() -> Path:
 
 
 def log_path(skill: str) -> Path:
+    skill = skill.lower()
+    if not re.fullmatch(r"[a-z0-9-]+", skill):
+        raise ValueError(f"Invalid skill name: {skill}")
     base = get_life_ops_dir()
     return base / "skills" / skill / "log.md"
 
