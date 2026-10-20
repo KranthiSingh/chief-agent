@@ -13,11 +13,15 @@ class Session(BaseModel):
     notes: str = Field(default="", description="Any notes or extra information. Leave empty if the user gave none. Never use the '|' character.")
 
 
-def log_path(skill: str) -> Path:
+def get_life_ops_dir() -> Path:
     life_ops_dir = os.environ.get("LIFE_OPS_DIR")
     if not life_ops_dir:
-        raise RuntimeError("LIFE_OPS_DIR is not set. Please add it to your .env file, e.g. LIFE_OPS_DIR=/path/to/life-ops")
-    base = Path(life_ops_dir)
+        raise SystemExit("LIFE_OPS_DIR is not set. Please add it to your .env file, e.g. LIFE_OPS_DIR=/path/to/life-ops")
+    return Path(life_ops_dir)
+
+
+def log_path(skill: str) -> Path:
+    base = get_life_ops_dir()
     return base / "skills" / skill / "log.md"
 
 
@@ -78,6 +82,7 @@ def compute_streak(skill: str, minimum: int) -> int:
 
 
 def main() -> None:
+    get_life_ops_dir()
     client = anthropic.Anthropic()
 
     read_logs_tool = {
@@ -111,7 +116,7 @@ def main() -> None:
         }
     }
 
-    system_prompt = "You are a personal AI assistant acting as my skills coach. Be informative but concise, and motivating but realistic."
+    system_prompt = f"Today is {date.today()}. You are a personal AI assistant acting as my skills coach. Be informative but concise, and motivating but realistic."
 
     print("Welcome to <name> \nAre we adding a new session or would you like to know something about your skills?")
     user_message = input()
