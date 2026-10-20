@@ -113,7 +113,9 @@ def main() -> None:
 
     system_prompt = "You are a personal AI assistant acting as my skills coach. Be informative but concise, and motivating but realistic."
 
-    messages=[{"role": "user", "content": "Have I been keeping up with Yoga. What's my current streak counting days with at least 20min?"}]
+    print("Welcome to <name> \nAre we adding a new session or would you like to know something about your skills?")
+    user_message = input()
+    messages=[{"role": "user", "content": user_message}]
 
     turns = 0
     total_input = 0
