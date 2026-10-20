@@ -34,8 +34,8 @@ You would need:
 
 1. Clone the repo and install the dependencies:
 ```
-git clone https://github.com/KranthiSingh/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/KranthiSingh/chief-agent.git
+cd chief-agent
 uv sync
 ```
 
