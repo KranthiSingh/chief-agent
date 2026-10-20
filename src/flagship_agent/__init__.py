@@ -122,7 +122,7 @@ def main() -> None:
 
     system_prompt = f"Today is {date.today()}. You are a personal AI assistant acting as my skills coach. Be informative but concise, and motivating but realistic."
 
-    print("Welcome to <name> \nAre we adding a new session or would you like to know something about your skills?")
+    print("Welcome to Chief \nAre we adding a new session or would you like to know something about your skills?")
     user_message = input()
     messages=[{"role": "user", "content": user_message}]
 
